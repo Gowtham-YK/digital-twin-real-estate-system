@@ -1,0 +1,22 @@
+body {
+    font-family: Arial;
+    text-align: center;
+}
+
+.form {
+    margin: 20px;
+}
+
+input {
+    margin: 5px;
+    padding: 8px;
+}
+
+button {
+    padding: 8px 15px;
+}
+
+#map {
+    height: 500px;
+    margin: 20px;
+}

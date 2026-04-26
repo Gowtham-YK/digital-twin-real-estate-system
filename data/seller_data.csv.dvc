@@ -1,0 +1,5 @@
+outs:
+- md5: 3c0416b4996c814840c06be7ff5f5ce3
+  size: 350498
+  hash: md5
+  path: seller_data.csv

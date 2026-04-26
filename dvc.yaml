@@ -1,0 +1,16 @@
+stages:
+  buyer_model:
+    cmd: python models/buyer_model/train_buyer.py
+    deps:
+      - models/buyer_model/train_buyer.py
+      - data/banglore.csv
+    outs:
+      - models/buyer_model/model.pkl
+
+  seller_model:
+    cmd: python models/seller_model/train_seller.py
+    deps:
+      - models/seller_model/train_seller.py
+      - data/seller_data.csv
+    outs:
+      - models/seller_model/model.pkl

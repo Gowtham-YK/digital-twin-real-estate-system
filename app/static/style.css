@@ -1,0 +1,98 @@
+/* =========================
+   🌍 GLOBAL STYLES
+========================= */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f4f6f8;
+    color: #333;
+}
+
+/* =========================
+   🧱 CONTAINER
+========================= */
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+/* =========================
+   🏷️ HEADINGS
+========================= */
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #34495e;
+    margin-top: 30px;
+}
+
+/* =========================
+   📦 CARD STYLE
+========================= */
+.card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* =========================
+   🧾 INPUTS
+========================= */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* =========================
+   🔘 BUTTONS
+========================= */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #2980b9;
+}
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 12px;
+}
+/* =========================
+   📊 RESULT TEXT
+========================= */
+#predictionResult,
+#simulationResult,
+#decisionResult {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+/* =========================
+   🗺️ MAP
+========================= */
+#map {
+    height: 400px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
