@@ -26,6 +26,12 @@ jobs:
       run: |
         pip install dvc
 
+    # 🔹 NEW: show files (debugging + proof)
+    - name: Check Data Files
+      run: |
+        echo "Checking data folder..."
+        ls data
+
     - name: Run DVC Pipeline
       run: |
         python -m dvc repro
