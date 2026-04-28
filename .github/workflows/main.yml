@@ -26,7 +26,6 @@ jobs:
       run: |
         pip install dvc
 
-    # 🔹 NEW: show files (debugging + proof)
     - name: Check Data Files
       run: |
         echo "Checking data folder..."
@@ -39,8 +38,8 @@ jobs:
     - name: Verify Model Files
       run: |
         echo "Checking generated models..."
-        ls models/buyer_model
-        ls models/seller_model
+        ls models/buyer_model/model.pkl
+        ls models/seller_model/model.pkl
 
     - name: CI/CD Success
       run: echo "Pipeline executed successfully"
