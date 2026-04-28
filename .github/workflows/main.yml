@@ -17,10 +17,24 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: Check Repo
+    - name: Install Dependencies
       run: |
-        echo "Repo is working"
-        ls
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-    - name: Success
-      run: echo "CI/CD Success"
+    - name: Install DVC
+      run: |
+        pip install dvc
+
+    - name: Run DVC Pipeline
+      run: |
+        python -m dvc repro
+
+    - name: Verify Model Files
+      run: |
+        echo "Checking generated models..."
+        ls models/buyer_model
+        ls models/seller_model
+
+    - name: CI/CD Success
+      run: echo "Pipeline executed successfully"
