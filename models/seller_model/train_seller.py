@@ -10,6 +10,32 @@ from xgboost import XGBRegressor
 import mlflow
 import mlflow.sklearn
 
+# =========================
+# DRIFT CREATION
+# =========================
+def introduce_drift(df):
+    df_drift = df.copy()
+
+    # disturb target
+    df_drift["sell_price"] = df_drift["sell_price"] * np.random.uniform(0.6, 1.4, len(df))
+
+    # break relationship
+    df_drift["sqft"] = np.random.permutation(df_drift["sqft"].values)
+
+    # add outliers
+    df_drift.loc[df_drift.sample(frac=0.1).index, "sell_price"] *= 1.8
+
+    return df_drift
+
+
+# =========================
+# CLEAN DATA
+# =========================
+def clean_data(df):
+    df = df[df["sell_price"] < df["sell_price"].quantile(0.95)]
+    df["sell_price"] = df["sell_price"].clip(lower=10000)
+    return df
+
 mlflow.set_experiment("Seller_Model")
 
 # =========================
@@ -17,7 +43,7 @@ mlflow.set_experiment("Seller_Model")
 # =========================
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 DATA_PATH = os.path.join(BASE_DIR, "data", "seller_data.csv")
-MODEL_PATH = os.path.join(BASE_DIR, "models", "seller_model", "seller_model.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "seller_model", "model.pkl")
 
 print(f"📂 Loading dataset from: {DATA_PATH}")
 
@@ -34,6 +60,12 @@ print("Columns:", df.columns.tolist())
 # =========================
 df = df[df["buy_price"] > 0]
 df = df[df["sell_price"] > 0]
+df_original = df.copy()
+
+# =========================
+# INTRODUCE DRIFT
+# =========================
+df = introduce_drift(df)
 
 # =========================
 # FEATURE ENGINEERING
@@ -64,47 +96,49 @@ model = XGBRegressor(
 )
 
 print("⏳ Training seller model...")
-model.fit(X_train, y_train)
 
 # =========================
-# SAVE MODEL
+# MLFLOW TRAINING + DRIFT LOGIC
 # =========================
-os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-joblib.dump(model, MODEL_PATH)
-
-print(f"✅ Model saved at: {MODEL_PATH}")
-
-# =========================
-# EVALUATION
-# =========================
-y_pred = model.predict(X_test)
-
-r2 = r2_score(y_test, y_pred)
-
-# Percentage Error (MAPE-like)
-percentage_error = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
-
-# =========================
-# PRINT RESULTS
-# =========================
-print("\n📊 MODEL PERFORMANCE:")
-print(f"Error: {percentage_error:.2f}%")
-print(f"R² Score: {r2:.4f}")
-
 with mlflow.start_run():
 
+    # Train on drifted data
     model.fit(X_train, y_train)
-
     preds = model.predict(X_test)
+    drift_score = r2_score(y_test, preds)
 
-    from sklearn.metrics import r2_score
-    score = r2_score(y_test, preds)
+    print("⚠️ Seller Drifted R2:", drift_score)
+    mlflow.log_metric("seller_drift_r2", drift_score)
 
-    mlflow.log_param("model_type", "seller_model")
-    mlflow.log_metric("r2_score", score)
+    # Detect + Fix
+    if drift_score < 0.85:
+        print("🚨 Drift detected in seller model. Fixing...")
 
-    joblib.dump(model, "models/seller_model/model.pkl")
+        df_clean = clean_data(df_original)
+
+        # recreate features
+        df_clean["years"] = df_clean["sell_year"] - df_clean["buy_year"]
+        df_clean = df_clean[df_clean["years"] > 0]
+
+        X = df_clean[["latitude", "longitude", "sqft", "BHK", "buy_price", "years"]]
+        y = df_clean["sell_price"]
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+        fixed_score = r2_score(y_test, preds)
+
+        print("✅ Seller Recovered R2:", fixed_score)
+        mlflow.log_metric("seller_recovered_r2", fixed_score)
+
+    else:
+        fixed_score = drift_score
+
+    # Save model (correct place)
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    joblib.dump(model, MODEL_PATH)
 
     mlflow.sklearn.log_model(model, "model")
-
-    print(f"Seller Model R2 Score: {score}")

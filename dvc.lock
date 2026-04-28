@@ -9,13 +9,13 @@ stages:
       size: 256335
     - path: models/buyer_model/train_buyer.py
       hash: md5
-      md5: 918707f9dbfbec5ca822dfe8b917ae79
-      size: 3019
+      md5: 1eb509840f5b321e85dee29defc5fc7e
+      size: 4030
     outs:
     - path: models/buyer_model/model.pkl
       hash: md5
-      md5: fb692c7961aa37e1408f85bd164246b5
-      size: 806148
+      md5: f805cc79e56d4e41970ec7d80334f13f
+      size: 778920
   seller_model:
     cmd: python models/seller_model/train_seller.py
     deps:
@@ -25,10 +25,10 @@ stages:
       size: 350498
     - path: models/seller_model/train_seller.py
       hash: md5
-      md5: 9ac3f131449e71eda137578d9e593dae
-      size: 2812
+      md5: f8675f40526782c573072c54b2e8a3a7
+      size: 3947
     outs:
     - path: models/seller_model/model.pkl
       hash: md5
-      md5: ce154edf94cd7fa1c9444d42a78e0b47
-      size: 1200046
+      md5: 0aa043c37e539875730cf0f93f7a377c
+      size: 1217270

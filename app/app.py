@@ -73,11 +73,17 @@ def buyer_predict():
         sqft = float(data.get("sqft"))
         bhk = int(data.get("bhk"))
 
+        print("Location:", location)
+        print("Sqft:", sqft)
+        print("BHK:", bhk)
+
         if not location:
             return jsonify({"status": "error", "message": "Location required"}), 400
 
-        # Geocode
+        # Geocode 
+
         lat, lon = geocode_location(location)
+        print("Lat:", lat, "Lon:", lon)
 
         # Predict
         price = predict_price(lat, lon, sqft, bhk)
